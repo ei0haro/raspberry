@@ -13,7 +13,6 @@ import time
 from demo_opts import get_device
 from luma.core.virtual import terminal
 from PIL import ImageFont
-#import Image
 import xbox
 
 
@@ -24,11 +23,12 @@ def make_font(name, size):
 
 
 def main():
-#    font = ImageFont.truetype("arial.ttf", 12)
-    term = terminal(device, make_font("tiny.ttf", 6))
-    term.println("------------------")
-    term.println("       START      ")
-    term.println("------------------")
+
+    term = terminal(device, make_font("tiny.ttf", 8), "white", "black", 4, None, False)
+    term.println("Connecting to XBOX Controller...")
+    joy = xbox.Joystick()
+    term.println("SUCCESS")
+
     while not joy.Back():
 
         if joy.A():
@@ -45,7 +45,7 @@ def main():
 
 
 if __name__ == "__main__":
-    joy = xbox.Joystick()
+
     try:
         device = get_device()
         main()
