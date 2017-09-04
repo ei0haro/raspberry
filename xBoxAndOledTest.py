@@ -22,14 +22,14 @@ def make_font(name, size):
         os.path.dirname(__file__), 'fonts', name))
     return ImageFont.truetype(font_path, size)
 
-def draw_dot(x,y):
-#   bbox = [(x, y), (x+1, y+1)]
+def draw_text(x, y, text):
    with canvas(device) as draw:
-       draw.point((x,y), fill="#ddddff")
-#       draw.rectangle(bbox, fill="#ddddff", outline="blue")
+       if text:
+           draw.text((x,y), str(text), font=usedfont, fill=255)
+       else: draw.point((x,y), fill=255)
 
 def mapXCoordinate(x):
-   oledXMax=127
+   oledXMax = device.width-1
    oledXMin=1
    xBoxXMax=1
    xBoxXMin=-1
@@ -37,32 +37,34 @@ def mapXCoordinate(x):
 
 def mapYCoordinate(y):
    oledYMax=1
-   oledYMin=31
+   oledYMin = device.height-1
    xBoxYMax=1
    xBoxYMin=-1
    return (((y - xBoxYMin) * (oledYMax - oledYMin)) / (xBoxYMax - xBoxYMin)) + oledYMin
 
 def main():
 
-    term = terminal(device, make_font("tiny.ttf", 6), "white", "black", 4, None, False)
+    term = terminal(device, usedfont)
+    term.animate=False
     term.println("Connecting to XBOX Controller...")
     joy = xbox.Joystick()
     term.println("SUCCESS")
 
     while not joy.Back():
     
+        text = ""
         if joy.A():
-            term.println("Button A Pressed")
+            text+="A"
         if joy.B():
-            term.println("Button B Pressed")
+            text+="B"
         if joy.Y():
-            term.println("Button Y Pressed")
+            text+="Y"
         if joy.X():
-            term.println("Button X Pressed")
+            text+="X"
 
 	x, y = joy.leftStick()
 	
-	draw_dot(mapXCoordinate(x),mapYCoordinate(y))
+	draw_text(mapXCoordinate(x), mapYCoordinate(y), text)
 
     joy.close()
 
@@ -71,6 +73,7 @@ def main():
 if __name__ == "__main__":
 
     try:
+        usedfont= make_font("tiny.ttf", 6)
         device = get_device()
         main()
     except KeyboardInterrupt:
