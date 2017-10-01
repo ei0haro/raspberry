@@ -35,10 +35,11 @@ def mapYCoordinate(y):
    return (((y - xBoxYMin) * (oledYMax - oledYMin)) / (xBoxYMax - xBoxYMin)) + oledYMin
 '''
 
-def mapYCoordinateToPWM1(y):
+def mapXboxToToPWM(y):
    xBoxYMax=1
    xBoxYMin=-1
-   return (((y - xBoxYMin) * (servo_max - servo_min)) / (xBoxYMax - xBoxYMin)) + servo_min
+   pwmMapped = (((y - xBoxYMin) * (servo_max - servo_min)) / (xBoxYMax - xBoxYMin)) + servo_min
+   return int(round(pwmMapped)) 
 
 def main():
 
@@ -66,8 +67,8 @@ def main():
 	    print text
         x, y = joy.leftStick()
 
-	pwm.set_pwm(0, 0, mapYCoordinateToPWM1(y))
-
+	pwm.set_pwm(0, 0, mapXboxToToPWM(x))
+        pwm2.set_pwm(15, 0, mapXboxToToPWM(y))
 #	draw_text(mapXCoordinate(x), mapYCoordinate(y), text)
 
     joy.close()
@@ -80,6 +81,7 @@ if __name__ == "__main__":
 #        usedfont= make_font("tiny.ttf", 6)
 #        device = get_device()
 	pwm = Adafruit_PCA9685.PCA9685()
+	pwm2 = Adafruit_PCA9685.PCA9685(address=0x41)
 	servo_min = 150  # Min pulse length out of 4096
 	servo_max = 600  # Max pulse length out of 4096
 	pwm.set_pwm_freq(60)
